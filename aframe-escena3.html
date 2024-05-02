@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Dancer with light and shadows</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/gh/akbartus/A-Frame-Occlusion-Component/js/occlusion-component.js'></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <script>
+        AFRAME.registerComponent('rotate', {
+        schema: {
+            speed: { type: 'number', default: 1 }
+        },
+
+        tick: function (time, timeDelta)
+        {
+            rot = this.el.getAttribute('rotation');
+            rot.y = rot.y + timeDelta * this.data.speed;
+            this.el.setAttribute('rotation', rot);
+        }
+        });
+
+        AFRAME.registerComponent('shadowonly', {
+            init: function () {
+            // Create shadow material
+            const material = new THREE.ShadowMaterial({
+                opacity: 0.85,
+            });
+
+            // Apply material to object and all children
+            this.el.object3D.traverse((obj) => {
+                obj.material = material;
+            });
+            }
+        });
+        AFRAME.registerComponent('occlusion', {
+            init: function() {
+            // Create occlusion material (only depth not color)
+            const material = new THREE.MeshStandardMaterial({
+            colorWrite: false,
+            });
+            // Apply material to object and all children
+            this.el.object3D.traverse( (obj) => {
+            obj.material = material;
+            });
+            }
+            });
+    </script>
+    </head>
+    <body>
+    <a-scene arjs embedded>
+
+        <a-camera id="user-camera" position="0 1.6 0" fov="100"></a-camera>
+
+        <a-entity
+            id="luz_bailarina"
+            position="-70 50 1"
+            rotation="0 0 0"
+            light="type: spot; color: white; castShadow: true; intensity:2">
+        </a-entity>
+
+        <a-entity
+        id="luz_botella"
+        position="-250 50 250"
+        rotation="0 0 0"
+        light="type: spot; color: white; castShadow: true; intensity:1">
+    </a-entity>
+
+        <a-entity
+            id="luz_ambiente"
+            light="type:ambient; intensity:0.8">
+        </a-entity>
+
+        <a-gltf-model
+            shadow
+            id="bailarina"
+            src="/assets/Michelle.glb"
+            rotate = "speed: 0.15"
+            scale="70 70.5 70"
+            position="45 -185 -225"
+            look-at="[camera]">
+        </a-gltf-model>
+     <a-gltf-model
+        shadow
+        id="cohete"
+        src="/assets/rocket.jpg"
+        scale="70 70.5 70"
+        position="65 -205 -250"
+        look-at="[camera]"
+        >
+    </a-gltf-model>
+    <a-gltf-model
+        shadow
+        id="botella"
+        src="/assets/model.glb"
+        scale="6 8 6"
+        position="-190 -140 145"
+        look-at="[camera]"
+        >
+    </a-gltf-model>
+    <a-gltf-model
+        shadow
+        id="coche"
+        src="/assets/bmw326_SCR1.glb"
+        scale="0.65 0.65 0.65"
+        position="-105 -175 -320"
+        rotation="0 -135 0"
+        look-at="[camera]"
+    >
+    </a-gltf-model>
+        <a-plane
+            id="suelo"
+            shadow="cast:false" shadowonly
+            material="color:white;opacity:1"
+            rotation="-90 0 0"
+            position="0 -185 -300"
+            width="400"
+            height="400"
+        >
+        </a-plane>
+
+        <a-plane
+            id="mantel"
+            shadow="cast:false" shadowonly
+            material="color:white;opacity:1"
+            rotation="-90 0 0"
+            position="-185 -135 140"
+            width="60"
+            height="60"
+        >
+        </a-plane>
+        
+      <a-marker preset="kanji" >
+        <a-entity id="axis"> 
+          <a-box position="0.5 0 0" depth="0.1" height="0.1" width="1" color="red">  </a-box>
+          <a-box position="0 0.5 0" depth="0.1" height="1" width="0.1" color="green">  </a-box>
+          <a-box position="0 0 0.5" depth="1" height="0.1" width="0.1" color="blue">  </a-box>
+        </a-entity>
+      </a-marker>
+    </a-scene>
+    <!--   <script>
+        var camera = document.getElementById('user-camera');
+        var model = document.getElementById('pokemon-model');
+
+        function adjustModelPosition() {
+        var cameraPosition = camera.getAttribute('position');
+
+        model.object3D.position.set(cameraPosition.x, cameraPosition.y - 2, cameraPosition.z);
+        }
+
+        document.addEventListener('DOMContentLoaded', adjustModelPosition);
+        camera.addEventListener('componentchanged', function (evt) {
+        if (evt.detail.name === 'position') {
+            adjustModelPosition();
+        }
+        });
+    </script> -->
+    </body>
+</html>
