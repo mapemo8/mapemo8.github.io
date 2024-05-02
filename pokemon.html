@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Dancer with light and shadows</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script>
+        AFRAME.registerComponent('shadowonly', {
+            init: function () {
+            // Create shadow material
+            const material = new THREE.ShadowMaterial({
+                opacity: 0.5,
+            });
+
+            // Apply material to object and all children
+            this.el.object3D.traverse((obj) => {
+                obj.material = material;
+            });
+            }
+        });
+    </script>
+    </head>
+    <body>
+    <a-scene embedded arjs vr-mode-ui="enabled: false">
+
+        <a-camera id="user-camera" position="0 1.6 0" fov="100"></a-camera>
+
+        <a-entity
+        id="luz_amarilla" 
+        position="-1.8 3 -2.5" 
+        rotation="-37 -20 10"
+            light="type: spot; color: yellow; intensity:3.5">
+        </a-entity>
+        <a-entity 
+        id="luz_ambiente"
+        light="type:ambient; intensity:1">
+        </a-entity>
+
+        <a-gltf-model
+            id="pokemon-model"
+            src="/assets/Pokemon.glb"
+            scale="60  60.5 60"
+            position="-10 -20 -380"
+            rotation="0 90 0"
+            look-at="[camera]"
+            >
+        </a-gltf-model>
+        <a-plane
+            id="suelo"
+            shadow="cast:false" shadowonly  
+            material="color:white;opacity:1"
+            rotation="-90 0 0"
+            position="15 -180 -370"
+            width="400"
+            height="400"
+        >
+        </a-plane>
+    
+    </a-scene>
+     <script>
+        var camera = document.getElementById('user-camera');
+        var model = document.getElementById('pokemon-model');
+
+        function adjustModelPosition() {
+          var cameraPosition = camera.getAttribute('position');
+
+         model.object3D.position.set(cameraPosition.x - 10, cameraPosition.y - 2, cameraPosition.z - 360);
+        }
+
+        //document.addEventListener('DOMContentLoaded', adjustModelPosition);
+        camera.addEventListener('componentchanged', function (evt) {
+        if (evt.detail.name === 'position') {
+            //adjustModelPosition();
+        }
+        });
+    </script> 
+    </body>
+</html>
